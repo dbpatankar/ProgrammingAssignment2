@@ -8,14 +8,17 @@
 
 makeCacheMatrix <- function(x = matrix()) {
         inv <- NULL
-        set <- function(y){
-                x <<- y
-                inv <<- NULL
+        # set() changes the values of argument x of makeCacheMatrix()
+        set <- function(y){     # Takes y(matrix) as input
+                x <<- y         # Assigns y to x in parent frame
+                inv <<- NULL    # Since matrix is changed, inverse must be
+                                # reassigned to NULL
         }
-        get <- function() x
-        setinv <- function(sinv) inv <<- sinv
-        getinv <- function() inv
-        list(set=set, get=get, setinv = setinv, getinv=getinv)
+        get <- function() x     		# returns matrix x
+        setinv <- function(sinv) inv <<- sinv   # Sets input as inv in parent
+                                                # frame
+        getinv <- function() inv        	# gets inv
+        list(set=set, get=get, setinv = setinv, getinv=getinv) # List of 4 fs
 }
 
 
@@ -24,15 +27,18 @@ makeCacheMatrix <- function(x = matrix()) {
 # It first checks if the inverse of matrix exists in getinv() of 
 # makeCacheMatrix() and returns it if available. If not available then 
 # calculates it using solve() and returns the answer.
-cacheSolve <- function(x, ...) {
+
+cacheSolve <- function(x, ...) { # Takes makeCacheMatrix() object as input
         ## Return a matrix that is the inverse of 'x'
-        inv <- x$getinv()
-        if(!is.null(inv)) {
-                message("getting cached data")
-                return(inv)
+        inv <- x$getinv()       # Gets getinv() from makeCacheMatrix()
+        if(!is.null(inv)) {     # Checks if inv has stored value
+                message("getting cached data") 
+                return(inv)     # returns inv
         }
-        data <- x$get()
-        inv <- solve(data, ...)
-        x$setinv(inv)
+        data <- x$get()         # if inv is not stored, get the matrix to be
+                                # inverted and store in 'data'
+        inv <- solve(data, ...) # Invert the matrix 'data'
+        x$setinv(inv)           # store the inverse in makeCacheMatrix() 
+                                # using setinv()
         inv
 }
